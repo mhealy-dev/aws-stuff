@@ -1,0 +1,48 @@
+service: aws-stuff
+
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: us-east-1
+  memorySize: 512
+  stage: ${opt:stage, 'dev'}
+  versionFunctions: false
+  environment:
+    STAGE: ${self:provider.stage}
+
+  tags:
+    Project: aws stuff
+    ApplicationName: aws-stuff
+    ApplicationOwner: Michael healy
+    AppOwnerEmail: mdhealy.dev@gmail.com
+    Environment: ${self:provider.stage}
+    Country: USA
+    Tier: Application
+    BillTo: ""
+  
+package:
+  individually: true
+  exclude:
+    - node_modules/**
+
+functions:
+  GenerateLiFile:
+    handler: handler.generate
+    events:
+      - http:
+          path: generate
+          method: get
+    environment:
+      BUCKET_NAME: !Ref MyBucket
+
+
+resources:
+  Resources:
+    MyBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: lorem-ipsum-data-dev
+
+
+
